@@ -43,6 +43,7 @@ class VkPosts extends PostPlugin
 	{
 		$this->saveResources();
 		$this->loadTranslations();
+		$this->registerCommands();
 
 		$this->db = new libasynql($this->getBansManager()->getDataBase());
 
@@ -103,7 +104,7 @@ class VkPosts extends PostPlugin
 
 		$map->registerAll("BANedetta_VK", [
 			new AddAdminCommand($this, "vaa", "Add admin command", "banedetta.vk.add_admin"),
-			new RemoveAdminCommand($this, "vaa", "Remove admin command", "banedetta.vk.remove_admin")
+			new RemoveAdminCommand($this, "var", "Remove admin command", "banedetta.vk.remove_admin")
 		]);
 	}
 
