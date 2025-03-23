@@ -1,2 +1,4 @@
+default_language: ru_RU
+
 access_token: "секретнейший токен, что аж даже пентагон завидует"
-group_id: 223942808
+group_id: 223942808 # Без минуса

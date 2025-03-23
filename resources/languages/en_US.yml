@@ -1,0 +1,9 @@
+name: English (US)
+
+add_admin.usage: "Usage: /vaa <id: int>"
+add_admin.already_admin: This ID is already an administrator.
+add_admin.success: This ID has been successfully added to the list of VK platform administrators.
+
+remove_admin.usage: "Usage: /var <id: int>"
+remove_admin.not_admin: This ID was not found in the list of administrators.
+remove_admin.success: This ID has been successfully removed from the list of VK platform administrators.

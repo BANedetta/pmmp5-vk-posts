@@ -1,0 +1,9 @@
+name: Русский (Russian)
+
+add_admin.usage: "Использование: /vaa <id: int>"
+add_admin.already_admin: Данный ID уже является администратором.
+add_admin.success: Данный ID успешно добавлен в список администраторов платформы VK.
+
+remove_admin.usage: "Использование: /var <id: int>"
+remove_admin.not_admin: Данный ID не найден в списке администраторов.
+remove_admin.success: Данный ID успешно удален из списка администраторов платформы VK.

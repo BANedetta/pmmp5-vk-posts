@@ -2,10 +2,15 @@
 
 namespace Taskov1ch\BANedetta_VK;
 
+use IvanCraft623\languages\Language;
+use IvanCraft623\languages\Translator;
 use pocketmine\utils\Config;
 use pocketmine\utils\SingletonTrait;
+use Symfony\Component\Filesystem\Path;
 use Taskov1ch\BANedetta\BANedetta;
 use Taskov1ch\BANedetta\posts\PostPlugin;
+use Taskov1ch\BANedetta_VK\commands\AddAdminCommand;
+use Taskov1ch\BANedetta_VK\commands\RemoveAdminCommand;
 use Taskov1ch\BANedetta_VK\providers\libasynql;
 use Taskov1ch\BANedetta_VK\requests\AsyncRequests;
 
@@ -13,6 +18,7 @@ class VkPosts extends PostPlugin
 {
 	use SingletonTrait;
 
+	private Translator $translator;
 	private libasynql $db;
 	private AsyncRequests $requests;
 	private array $posts;
@@ -26,8 +32,18 @@ class VkPosts extends PostPlugin
 		BANedetta::getInstance()->getPostsManager()->registerPostPlugin($this);
 	}
 
+	public function onDisable(): void
+	{
+		$admins = new Config($this->getDataFolder() . "admins.yml");
+		$admins->setAll($this->admins);
+		$admins->save();
+	}
+
 	public function onRegistered(): void
 	{
+		$this->saveResources();
+		$this->loadTranslations();
+
 		$this->db = new libasynql($this->getBansManager()->getDataBase());
 
 		$config = $this->getConfig();
@@ -45,6 +61,52 @@ class VkPosts extends PostPlugin
 		$this->requests->getLongpollServer();
 	}
 
+	private function saveResources(): void
+	{
+		$dirs = ["", "languages"];
+		$resourceFolder = $this->getResourceFolder();
+
+		foreach ($dirs as $dir) {
+			$files = glob(Path::join($resourceFolder, $dir, "*.yml"));
+
+			foreach ($files as $file) {
+				$relativePath = str_replace($resourceFolder, "", $file);
+				$this->saveResource($relativePath);
+			}
+		}
+	}
+
+	private function loadTranslations(): void
+	{
+		$defaultLang = $this->getConfig()->get("default_language");
+		$files = glob(Path::join($this->getDataFolder(), "languages", "*.yml"));
+		$this->translator = new Translator($this);
+
+		foreach ($files as $file) {
+			$langName = basename($file, ".yml");
+			$lang = new Language(
+				$langName,
+				(new Config($file))->getAll()
+			);
+
+			$this->translator->registerLanguage($lang);
+
+			if ($langName === $defaultLang) {
+				$this->translator->setDefaultLanguage($lang);
+			}
+		}
+	}
+
+	private function registerCommands(): void
+	{
+		$map = $this->getServer()->getCommandMap();
+
+		$map->registerAll("BANedetta_VK", [
+			new AddAdminCommand($this, "vaa", "Add admin command", "banedetta.vk.add_admin"),
+			new RemoveAdminCommand($this, "vaa", "Remove admin command", "banedetta.vk.remove_admin")
+		]);
+	}
+
 	public function getDatabase(): libasynql
 	{
 		return $this->db;
@@ -53,6 +115,30 @@ class VkPosts extends PostPlugin
 	public function getDatabaseQueriesMap(): array
 	{
 		return ["mysql" => "database/mysql.sql", "sqlite" => "database/sqlite.sql"];
+	}
+
+	public function getTranslator(): Translator
+	{
+		return $this->translator;
+	}
+
+	public function isAdmin(int $id): bool
+	{
+		return in_array($id, $this->admins);
+	}
+
+	public function addAdmin(int $id): void
+	{
+		if (!$this->isAdmin($id)) {
+			$this->admins[] = $id;
+		}
+	}
+
+	public function removeAdmin(int $id): void
+	{
+		if ($this->isAdmin($id)) {
+			unset($this->admins[array_search($id, $this->admins)]);
+		}
 	}
 
 	public function createPost(string $banned, string $by, string $reason, int $timeLimit): void
