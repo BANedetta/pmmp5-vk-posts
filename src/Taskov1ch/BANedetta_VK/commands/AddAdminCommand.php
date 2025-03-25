@@ -12,7 +12,9 @@ class AddAdminCommand extends Command implements PluginOwned
 
 	public function __construct(
 		private VkPosts $main,
-		string $name, string $description, string $permission
+		string $name,
+		string $description,
+		string $permission
 	) {
 		parent::__construct($name, $description);
 		$this->setPermission($permission);

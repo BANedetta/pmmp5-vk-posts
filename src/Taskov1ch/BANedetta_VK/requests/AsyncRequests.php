@@ -29,44 +29,28 @@ class AsyncRequests
 		$attachments = json_encode($attachments);
 
 		$this->main->getServer()->getAsyncPool()->submitTask(
-			new AsyncEditPost(
-				$this->token,
-				-$this->groupId,
-				$postId,
-				$postContent,
-				$attachments
-			)
+			new AsyncEditPost($this->token, -$this->groupId, $postId, $postContent, $attachments)
 		);
 	}
 
 	public function removePost(int $postId): void
 	{
 		$this->main->getServer()->getAsyncPool()->submitTask(
-			new AsyncRemovePost(
-				$this->token,
-				-$this->groupId,
-				$postId
-			)
+			new AsyncRemovePost($this->token, -$this->groupId, $postId)
 		);
 	}
 
 	public function settingLongpoll(): void
 	{
 		$this->main->getServer()->getAsyncPool()->submitTask(
-			new AsyncSettingLongpoll(
-				$this->token,
-				$this->groupId
-			)
+			new AsyncSettingLongpoll($this->token, $this->groupId)
 		);
 	}
 
 	public function getLongpollServer(): void
 	{
 		$this->main->getServer()->getAsyncPool()->submitTask(
-			new AsyncGetLongpollServer(
-				$this->token,
-				$this->groupId
-			)
+			new AsyncGetLongpollServer($this->token, $this->groupId)
 		);
 	}
 

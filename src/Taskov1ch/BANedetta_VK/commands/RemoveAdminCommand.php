@@ -12,7 +12,9 @@ class RemoveAdminCommand extends Command implements PluginOwned
 
 	public function __construct(
 		private VkPosts $main,
-		string $name, string $description, string $permission
+		string $name,
+		string $description,
+		string $permission
 	) {
 		parent::__construct($name, $description);
 		$this->setPermission($permission);
@@ -35,7 +37,7 @@ class RemoveAdminCommand extends Command implements PluginOwned
 
 		$id = (int) $args[0];
 
-		if ($this->main->isAdmin($id)) {
+		if (!$this->main->isAdmin($id)) {
 			$messgae = $translator->translate($sender, "remove_admin.not_admin");
 			$sender->sendMessage($messgae);
 			return;
@@ -43,7 +45,7 @@ class RemoveAdminCommand extends Command implements PluginOwned
 
 		$this->main->removeAdmin($id);
 
-		$message = $translator->translate($sender, "remove.success");
+		$message = $translator->translate($sender, "remove_admin.success");
 		$sender->sendMessage($message);
 	}
 }
