@@ -1,6 +1,6 @@
 waiting:
   attachments:
-    - photo-224130500_457239036
+    - photo-223942808_456239025
   post: |-
     Игрок {banned} был заблокирован игроком {by}.
     Причина: {reason}.
@@ -8,7 +8,7 @@ waiting:
 
 confirmed:
   attachments:
-    - photo-224130500_457239042
+    - photo-223942808_456239023
   post: |-
     Игрок {banned} был заблокирован игроком {by}.
     Причина: {reason}.
@@ -16,7 +16,7 @@ confirmed:
 
 not_confirmed:
   attachments:
-    - photo-224130500_457239037
+    - photo-223942808_456239024
   post: |-
     Игрок {banned} был заблокирован игроком {by}.
     Причина: {reason}.
