@@ -18,10 +18,12 @@ class AsyncRemovePost extends AsyncTask
 	public function onRun(): void
 	{
 		$client = new VKApiClient();
+
 		$response = $client->wall()->delete($this->token, [
 			"owner_id" => $this->groupId,
 			"post_id" => $this->postId
 		]);
+
 		$this->setResult($response);
 	}
 }

@@ -22,12 +22,14 @@ class AsyncCreatePost extends AsyncTask
 	public function onRun(): void
 	{
 		$client = new VKApiClient();
+
 		$response = $client->wall()->post($this->token, [
 			"owner_id" => $this->groupId,
 			"from_group" => 1,
 			"message" => $this->postContent,
 			"attachments" => json_decode($this->attachments)
 		]);
+
 		$this->setResult($response);
 	}
 

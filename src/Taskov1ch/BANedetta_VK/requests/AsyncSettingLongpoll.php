@@ -17,10 +17,12 @@ class AsyncSettingLongpoll extends AsyncTask
 	public function onRun(): void
 	{
 		$client = new VKApiClient();
+
 		$response = $client->groups()->setLongPollSettings($this->token, [
 			"group_id" => $this->groupId,
 			"wall_reply_new" => 1
 		]);
+
 		$this->setResult($response);
 	}
 }

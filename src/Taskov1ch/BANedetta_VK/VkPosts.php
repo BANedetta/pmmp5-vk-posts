@@ -59,6 +59,7 @@ class VkPosts extends PostPlugin
 			$this->{$configName} = (new Config($this->getDataFolder() . "$configName.yml"))->getAll();
 		}
 
+		$this->requests->settingLongpoll();
 		$this->requests->getLongpollServer();
 	}
 
@@ -115,7 +116,10 @@ class VkPosts extends PostPlugin
 
 	public function getDatabaseQueriesMap(): array
 	{
-		return ["mysql" => "database/mysql.sql", "sqlite" => "database/sqlite.sql"];
+		return [
+			"mysql" => "database/mysql.sql",
+			"sqlite" => "database/sqlite.sql"
+		];
 	}
 
 	public function getTranslator(): Translator
@@ -162,7 +166,7 @@ class VkPosts extends PostPlugin
 					$this->db->removePostByBanned($data["banned"]);
 				}
 			},
-			fn () => null
+			fn() => null
 		);
 	}
 
@@ -182,16 +186,32 @@ class VkPosts extends PostPlugin
 		if (isset($response["ts"])) {
 			$this->longpollData["ts"] = (int) $response["ts"];
 
-			array_map(
-				fn ($update) => $this->db->getDataById($update["object"]["post_id"])->onCompletion(
-					fn (array $data) => empty($data) ?: match ($update["object"]["text"]) {
-						"+" => $this->getBansManager()->confirm($data["banned"]),
-						"-" => $this->getBansManager()->notConfirm($data["banned"])
-					},
-					fn () => null
-				),
-				array_filter($response["updates"], fn ($update) => $update["type"] === "wall_reply_new" && in_array($update["object"]["from_id"], $this->admins) && in_array($update["object"]["text"], ["+", "-"]))
+			$updates = array_filter(
+				$response["updates"],
+				fn($update) => $update["type"] === "wall_reply_new" &&
+					in_array($update["object"]["from_id"], $this->admins) &&
+					in_array($update["object"]["text"], ["+", "-"])
 			);
+
+			foreach ($updates as $update) {
+				$object = $update["object"];
+				$postId = $object["post_id"];
+
+				$this->db->getDataById($postId)->onCompletion(
+					function (array $data) use ($object) {
+						if (empty($data)) {
+							$this->requests->removePost($object["post_id"]);
+							return;
+						}
+
+						match ($object["text"]) {
+							"+" => $this->getBansManager()->confirm($data["banned"]),
+							"-" => $this->getBansManager()->notConfirm($data["banned"])
+						};
+					},
+					fn() => null
+				);
+			}
 
 			$this->requests->longpoll($this->longpollData);
 		}
@@ -217,7 +237,7 @@ class VkPosts extends PostPlugin
 					$this->db->removePostByBanned($data["banned"]);
 				}
 			},
-			fn () => null
+			fn() => null
 		);
 	}
 

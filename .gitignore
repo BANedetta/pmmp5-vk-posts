@@ -3,3 +3,4 @@ vendor
 poggit
 .php-cs-fixer.cache
 virions
+autoload.php

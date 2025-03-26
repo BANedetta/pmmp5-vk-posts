@@ -3,8 +3,8 @@
 -- #{ vk_table
 	-- #{ init
 		CREATE TABLE IF NOT EXISTS vk_posts (
-			post_id INTEGER PRIMARY KEY,
-			banned VARCHAR(255),
+			post_id INT PRIMARY KEY,
+			banned VARCHAR(255) UNIQUE,
 			data TEXT
 		);
 	-- #}
@@ -29,7 +29,6 @@
 		VALUES (:post_id, :banned, :data)
 		ON DUPLICATE KEY UPDATE
 			post_id = VALUES(post_id),
-			banned = VALUES(banned),
 			data = VALUES(data);
 	-- #}
 

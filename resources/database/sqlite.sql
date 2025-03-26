@@ -4,7 +4,7 @@
 	-- #{ init
 		CREATE TABLE IF NOT EXISTS vk_posts (
 			post_id INTEGER PRIMARY KEY,
-			banned VARCHAR(255),
+			banned VARCHAR(255) UNIQUE,
 			data TEXT
 		);
 	-- #}
@@ -27,9 +27,8 @@
 		-- # :data string
 		INSERT INTO vk_posts (post_id, banned, data)
 		VALUES (:post_id, :banned, :data)
-		ON CONFLICT(post_id) DO UPDATE SET
+		ON CONFLICT(banned) DO UPDATE SET
 			post_id = excluded.post_id,
-			banned = excluded.banned,
 			data = excluded.data;
 	-- #}
 

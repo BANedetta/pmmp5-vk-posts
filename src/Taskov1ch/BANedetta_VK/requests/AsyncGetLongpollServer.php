@@ -18,6 +18,7 @@ class AsyncGetLongpollServer extends AsyncTask
 	public function onRun(): void
 	{
 		$client = new VKApiClient();
+
 		$response = $client->groups()->getLongPollServer($this->token, [
 			"group_id" => $this->groupId
 		]);

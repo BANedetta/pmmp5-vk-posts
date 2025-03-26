@@ -20,12 +20,12 @@ class AsyncEditPost extends AsyncTask
 	public function onRun(): void
 	{
 		$client = new VKApiClient();
+
 		$response = $client->wall()->edit($this->token, [
 			"owner_id" => $this->groupId,
 			"post_id" => $this->postId,
 			"message" => $this->postContent,
 			"attachments" => json_decode($this->attachments)
 		]);
-		$this->setResult($response);
 	}
 }
