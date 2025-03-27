@@ -4,3 +4,4 @@ poggit
 .php-cs-fixer.cache
 virions
 autoload.php
+.thread_autoload_injector.py

@@ -7,3 +7,5 @@ add_admin.success: Данный ID успешно добавлен в списо
 remove_admin.usage: "Использование: /var <id: int>"
 remove_admin.not_admin: Данный ID не найден в списке администраторов.
 remove_admin.success: Данный ID успешно удален из списка администраторов платформы VK.
+
+admins_list: "Список администраторов платформы VK: "

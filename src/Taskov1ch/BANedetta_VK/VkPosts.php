@@ -10,6 +10,7 @@ use Symfony\Component\Filesystem\Path;
 use Taskov1ch\BANedetta\BANedetta;
 use Taskov1ch\BANedetta\posts\PostPlugin;
 use Taskov1ch\BANedetta_VK\commands\AddAdminCommand;
+use Taskov1ch\BANedetta_VK\commands\AdminsListCommand;
 use Taskov1ch\BANedetta_VK\commands\RemoveAdminCommand;
 use Taskov1ch\BANedetta_VK\providers\libasynql;
 use Taskov1ch\BANedetta_VK\requests\AsyncRequests;
@@ -105,7 +106,8 @@ class VkPosts extends PostPlugin
 
 		$map->registerAll("BANedetta_VK", [
 			new AddAdminCommand($this, "vaa", "Add admin command", "banedetta.vk.add_admin"),
-			new RemoveAdminCommand($this, "var", "Remove admin command", "banedetta.vk.remove_admin")
+			new RemoveAdminCommand($this, "var", "Remove admin command", "banedetta.vk.remove_admin"),
+			new AdminsListCommand($this, "val", "Admins list command", "banedetta.vk.admins")
 		]);
 	}
 
@@ -125,6 +127,11 @@ class VkPosts extends PostPlugin
 	public function getTranslator(): Translator
 	{
 		return $this->translator;
+	}
+
+	public function getAdmins(): array
+	{
+		return $this->admins;
 	}
 
 	public function isAdmin(int $id): bool
