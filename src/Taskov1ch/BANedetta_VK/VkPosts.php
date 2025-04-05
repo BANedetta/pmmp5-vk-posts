@@ -173,55 +173,8 @@ class VkPosts extends PostPlugin
 					$this->db->removePostByBanned($data["banned"]);
 				}
 			},
-			fn() => null
+			fn () => null
 		);
-	}
-
-	public function updateLongpollData(array $data): void
-	{
-		$this->longpollData = $data;
-		$this->requests->longpoll($this->longpollData);
-	}
-
-	public function handleLongpollRespone(array $response): void
-	{
-		if (isset($response["failed"])) {
-			$this->longpollData["ts"] = $response["failed"] === 1 ? (int) $response["ts"] : $this->requests->getLongpollServer();
-			return;
-		}
-
-		if (isset($response["ts"])) {
-			$this->longpollData["ts"] = (int) $response["ts"];
-
-			$updates = array_filter(
-				$response["updates"],
-				fn($update) => $update["type"] === "wall_reply_new" &&
-					in_array($update["object"]["from_id"], $this->admins) &&
-					in_array($update["object"]["text"], ["+", "-"])
-			);
-
-			foreach ($updates as $update) {
-				$object = $update["object"];
-				$postId = $object["post_id"];
-
-				$this->db->getDataById($postId)->onCompletion(
-					function (array $data) use ($object) {
-						if (empty($data)) {
-							$this->requests->removePost($object["post_id"]);
-							return;
-						}
-
-						match ($object["text"]) {
-							"+" => $this->getBansManager()->confirm($data["banned"]),
-							"-" => $this->getBansManager()->notConfirm($data["banned"])
-						};
-					},
-					fn() => null
-				);
-			}
-
-			$this->requests->longpoll($this->longpollData);
-		}
 	}
 
 	private function updatePost(string $banned, string $type): void
@@ -244,7 +197,7 @@ class VkPosts extends PostPlugin
 					$this->db->removePostByBanned($data["banned"]);
 				}
 			},
-			fn() => null
+			fn () => null
 		);
 	}
 
@@ -256,5 +209,52 @@ class VkPosts extends PostPlugin
 	public function notConfirmed(string $banned): void
 	{
 		$this->updatePost($banned, "not_confirmed");
+	}
+
+	public function updateLongpollData(array $data): void
+	{
+		$this->longpollData = $data;
+		$this->requests->longpoll($this->longpollData);
+	}
+
+	public function handleLongpollRespone(array $response): void
+	{
+		if (isset($response["failed"])) {
+			$this->longpollData["ts"] = $response["failed"] === 1 ? (int) $response["ts"] : $this->requests->getLongpollServer();
+			return;
+		}
+
+		if (isset($response["ts"])) {
+			$this->longpollData["ts"] = (int) $response["ts"];
+
+			$updates = array_filter(
+				$response["updates"],
+				fn ($update) => $update["type"] === "wall_reply_new" &&
+					in_array($update["object"]["from_id"], $this->admins) &&
+					in_array($update["object"]["text"], ["+", "-"])
+			);
+
+			foreach ($updates as $update) {
+				$object = $update["object"];
+				$postId = $object["post_id"];
+
+				$this->db->getDataById($postId)->onCompletion(
+					function (array $data) use ($object) {
+						if (empty($data)) {
+							$this->requests->removePost($object["post_id"]);
+							return;
+						}
+
+						match ($object["text"]) {
+							"+" => $this->getBansManager()->confirm($data["banned"]),
+							"-" => $this->getBansManager()->notConfirm($data["banned"])
+						};
+					},
+					fn () => null
+				);
+			}
+
+			$this->requests->longpoll($this->longpollData);
+		}
 	}
 }
