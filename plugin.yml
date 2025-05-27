@@ -1,5 +1,5 @@
 name: BANedetta-vk-posts
-version: 1-dev
+version: 1-beta
 api: 5.0.0
 main: Taskov1ch\BANedetta_VK\VkPosts
 depend: BANedetta
